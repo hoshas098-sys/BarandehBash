@@ -1,3 +1,63 @@
+
+برنده باش
+ناوبری مخزن
+کد
+مشکلات
+درخواست‌های pull
+کامیت 685d24d
+hoshas098-sys
+hoshas098-sys
+نویسنده
+۱۲ دقیقه پیش
+
+تأیید شده
+به‌روزرسانی build-apk.yml
+اصلی
+۱ والد
+کامیت
+685d24d
+0 فایل تغییر کرد
+
++ ۹۹
+- ۴۱
+خطوط تغییر یافته: ۹۹ مورد اضافه و ۴۱ مورد حذف شده
+جستجو در کد
+ 
+‎.github/workflows/build-apk.yml‎
+شماره خط فایل اصلی	شماره خط تفاضلی	تغییر خط تفاضلی
+@@ -1,41 +1,99 @@
+name: Build JahanNama APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: دریافت پروژه
+        uses: actions/checkout@v4
+      - name: استخراج نسخه جدید
+        run: |
+          unzip -o JahanNama_v1.5.0_Source.zip \
+            -x '.github/workflows/build-apk.yml' \
+            -d .
+      - name: نصب جاوا
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: آماده‌سازی گِرِیدل
+        uses: gradle/actions/setup-gradle@v4
+      - name: ساخت برنامه
+        run: gradle assembleDebug
+      - name: دریافت فایل نصب
+        uses: actions/upload-artifact@v4
+        with:
+          name: JahanNama-v1.5.0-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
 <!doctype html>
 <html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#176b45"><title>جهان نما</title><style>
