@@ -1,8 +1,10 @@
 
-name: Build Barandeh Bash APK
+name: ساخت جهان‌نما
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -11,28 +13,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: دریافت مخزن
+        uses: actions/checkout@v4
 
-      - name: Prepare project
-        run: |
-          mkdir project
-          unzip -q BarandehBash_GitHub_APK.zip -d project
-          PROJECT_DIR=$(dirname "$(find project -name settings.gradle -print -quit)")
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-
-      - uses: actions/setup-java@v4
+      - name: آماده‌سازی جاوا
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: gradle/actions/setup-gradle@v4
-
-      - name: Build APK
+      - name: استخراج سورس جهان‌نما
         run: |
-          cd "$PROJECT_DIR"
-          gradle assembleDebug
+          mkdir -p /tmp/jahannama
+          unzip -o JahanNama_GitHub_APK.zip -d /tmp/jahannama
+          cp -a /tmp/jahannama/. .
 
-      - uses: actions/upload-artifact@v4
+      - name: آماده‌سازی گریدل
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: ساخت برنامه
+        run: gradle assembleDebug
+
+      - name: ذخیره فایل نصبی
+        uses: actions/upload-artifact@v4
         with:
-          name: BarandehBash-APK
-          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
+          name: JahanNama-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
