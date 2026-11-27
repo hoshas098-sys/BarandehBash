@@ -1,5 +1,4 @@
-
-name: ساخت جهان‌نما
+name: Build JahanNama APK
 
 on:
   workflow_dispatch:
@@ -12,30 +11,31 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: دریافت مخزن
+      - name: دریافت پروژه
         uses: actions/checkout@v4
 
-      - name: آماده‌سازی جاوا
+      - name: استخراج نسخه جدید
+        run: |
+          unzip -o JahanNama_v1.5.0_Source.zip \
+            -x '.github/workflows/build-apk.yml' \
+            -d .
+
+      - name: نصب جاوا
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: استخراج سورس جهان‌نما
-        run: |
-          mkdir -p /tmp/jahannama
-          unzip -o JahanNama_GitHub_APK.zip -d /tmp/jahannama
-          cp -a /tmp/jahannama/. .
-
-      - name: آماده‌سازی گریدل
+      - name: آماده‌سازی گِرِیدل
         uses: gradle/actions/setup-gradle@v4
 
       - name: ساخت برنامه
         run: gradle assembleDebug
 
-      - name: ذخیره فایل نصبی
+      - name: دریافت فایل نصب
         uses: actions/upload-artifact@v4
         with:
-          name: JahanNama-APK
+          name: JahanNama-v1.5.0-APK
           path: app/build/outputs/apk/debug/app-debug.apk
