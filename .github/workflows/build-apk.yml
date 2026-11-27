@@ -1,41 +1,99 @@
-name: Build JahanNama APK
-
-on:
-  workflow_dispatch:
-  push:
-    branches: [ main ]
-
-permissions:
-  contents: read
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: دریافت پروژه
-        uses: actions/checkout@v4
-
-      - name: استخراج نسخه جدید
-        run: |
-          unzip -o JahanNama_v1.5.0_Source.zip \
-            -x '.github/workflows/build-apk.yml' \
-            -d .
-
-      - name: نصب جاوا
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: آماده‌سازی گِرِیدل
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: ساخت برنامه
-        run: gradle assembleDebug
-
-      - name: دریافت فایل نصب
-        uses: actions/upload-artifact@v4
-        with:
-          name: JahanNama-v1.5.0-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#176b45"><title>جهان نما</title><style>
+*{box-sizing:border-box}:root{--g:#176b45;--g2:#0e5134;--mint:#e8f5ed;--ink:#183629;--line:#c9dfd1}
+body{margin:0;background:linear-gradient(160deg,#eaf6ee,#d7ecdf);color:var(--ink);font-family:Tahoma,Arial,sans-serif;padding:16px}.wrap{max-width:720px;margin:auto}
+.hero{border:1px solid #2d855b;border-radius:22px;padding:20px;text-align:center;background:linear-gradient(140deg,#238456,#0e5134);color:#fff;box-shadow:0 10px 28px #0e513426}
+h1{color:#fff;margin:4px} .sub{color:#e2f3e8;margin-bottom:0}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;margin-top:14px;box-shadow:0 5px 18px #164c2d10}
+h2,h3{color:var(--g)}button,input,select,textarea{font:inherit;border-radius:11px;padding:12px;border:1px solid #c7d9cd}button{background:var(--g);color:#fff;font-weight:bold;cursor:pointer;margin:5px}button.secondary{background:#e9f4ec;color:#175638}button.danger{background:#923939}
+input,select,textarea{width:100%;margin:6px 0;background:#fbfefc;color:#183629}textarea{min-height:220px;resize:vertical;line-height:1.9}button:disabled{opacity:.5}
+.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.option{display:block;width:100%;text-align:right;background:#f0f7f2;color:#174b32;border:1px solid #b8d6c2;margin:8px 0}
+#qtext{background:#176b45;color:white;border-radius:14px;padding:16px;line-height:1.9;font-weight:bold}#progress,#count{color:var(--g);font-weight:bold}.timer{font-size:23px;font-weight:bold;color:#b35b1d}.muted{color:#607568;font-size:13px;line-height:1.8}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row button{flex:1}.tag{display:inline-block;background:#e7f4eb;padding:5px 10px;border-radius:20px;color:#176b45;font-size:12px}
+body{min-height:100vh;background:radial-gradient(circle at 10% 8%,#d2f3b8 0,transparent 28%),linear-gradient(155deg,#e5f8dc,#c9ebbd 55%,#eff9e8);padding:14px}
+.wrap{max-width:560px}
+.hero{position:relative;overflow:hidden;border:2px solid #a9df8d;border-radius:28px;padding:22px 18px 25px;background:linear-gradient(145deg,#39a92b,#08712d 70%,#07552a);box-shadow:0 12px 28px #155c252c}
+.hero:after{content:"";position:absolute;width:190px;height:190px;border:1px solid #ffffff35;border-radius:50%;left:-65px;bottom:-125px;box-shadow:0 0 0 18px #ffffff0b,0 0 0 38px #ffffff0b}
+.brand-globe{font-size:58px;line-height:1.2;filter:drop-shadow(0 4px 4px #003c2440)}
+.hero h1{font-size:35px;letter-spacing:-1px;text-shadow:0 2px 3px #004b2638}
+.hero .sub{font-size:16px;font-weight:bold}
+.panel{border:1px solid #b7dda4;border-radius:23px;padding:18px;margin-top:14px;box-shadow:0 7px 20px #28652a12}
+.home-panel{text-align:center;padding:22px 18px}
+.home-panel h2{font-size:22px;margin:2px 0 5px}
+.home-actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:20px}
+.home-action{margin:0;min-height:78px;border:1px solid #0a792d;border-radius:17px;background:linear-gradient(145deg,#20a83d,#08752b);box-shadow:0 5px 0 #075b27;color:white;font-size:16px;display:flex;align-items:center;justify-content:center;gap:9px}
+.home-action span{font-size:25px}
+.home-action.secondary{background:linear-gradient(145deg,#f3ffe9,#dff5d3);color:#145b2c;border:1px solid #9dd282;box-shadow:0 4px 0 #b4d99e}
+button{transition:transform .12s ease,filter .12s ease}
+button:active{transform:translateY(2px);filter:brightness(.96)}
+input,select,textarea{border:1px solid #b8d8ac;border-radius:13px}
+#qtext{background:linear-gradient(135deg,#16823a,#08632b);border:1px solid #55b65e;border-radius:17px}
+.option{border-radius:15px;padding:15px;border:1px solid #b5dba5;background:#f3faed;color:#174d2c}
+.timer{background:#fff4d8;border-radius:12px;padding:5px 10px}
+@media(max-width:380px){.home-actions{grid-template-columns:1fr}.hero h1{font-size:30px}}
+html,body{direction:rtl;text-align:right}
+body,main,header,section,div,p,h1,h2,h3,label,button,input,select,textarea{direction:rtl}
+input,select,textarea{text-align:right}
+button,.option{text-align:center}
+.row{direction:rtl}
+.grid,.home-actions{direction:rtl}
+#timer,#progress,#count{direction:rtl;unicode-bidi:plaintext}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="brand-globe">🌍</div><h1>جهان نما</h1><p class="sub">آزمون، ارزیابی، موفقیت</p></header>
+<section class="panel home-panel" id="home"><h2>به جهان نما خوش آمدید</h2><p class="muted">برای ادامه، بخش موردنظر را انتخاب کنید.</p><div class="home-actions"><button class="home-action" onclick="showStudent()"><span>📝</span> آزمون‌ها</button><button class="home-action" onclick="adminLogin()"><span>📚</span> مدیریت آزمون‌ها</button><button class="home-action secondary" onclick="alert('کارنامه پس از شرکت در آزمون و ثبت نتیجه در دسترس مدیر است.')"><span>📊</span> کارنامه</button><button class="home-action secondary" onclick="alert('برای شرکت در آزمون، پایه و نوع آزمون را انتخاب کنید؛ سپس نام خود را وارد کرده و پاسخ دهید.')"><span>❔</span> راهنما</button></div></section>
+<section class="panel hidden" id="student"><h2>شرکت در آزمون</h2>
+<label>پایه تحصیلی</label><select id="grade"><option value="">انتخاب پایه</option><option>هفتم</option><option>هشتم</option><option>نهم</option></select>
+<label>درس</label><select id="subject"><option>مطالعات اجتماعی</option></select>
+<label>نوع آزمون</label><select id="examType"><option>درس به درس</option><option>تکمیلی</option><option>نوبت اول</option><option>نوبت دوم</option></select>
+<div id="studentExams"></div><button class="secondary" onclick="goHome()">بازگشت</button></section>
+<section class="panel hidden" id="identity"><h2>مشخصات دانش‌آموز</h2><p class="muted">نام و نام خانوادگی الزامی است؛ مدرسه و کلاس اختیاری هستند.</p>
+<input id="fullName" placeholder="نام و نام خانوادگی *"><input id="school" placeholder="نام مدرسه (اختیاری)"><input id="className" placeholder="کلاس (اختیاری)">
+<button onclick="beginStudentQuiz()">شروع آزمون</button><button class="secondary" onclick="showStudent()">بازگشت</button></section>
+<section class="panel hidden" id="admin"><div class="row"><h2 style="flex:1">پنل مدیریت</h2><button class="secondary" onclick="exitAdmin()">خروج از مدیریت</button></div>
+<p class="muted">مدیریت بانک سؤال و آزمون‌ها</p>
+<label>عنوان آزمون</label><input id="title" placeholder="مثلاً مطالعات اجتماعی ـ درس ۱">
+<div class="grid"><select id="adminGrade"><option>هفتم</option><option>هشتم</option><option>نهم</option></select><select id="adminType"><option>درس به درس</option><option>تکمیلی</option><option>نوبت اول</option><option>نوبت دوم</option></select></div>
+<label>درس‌های مورد آزمون</label><input id="examLessons" placeholder="مثلاً ۱، ۳، ۵ (شماره درس‌ها را وارد کنید)"><p class="muted">از بانک سؤال هر آزمون، در هر نوبت دقیقاً ۲۰ سؤال به‌صورت تصادفی انتخاب می‌شود.</p>
+<h3>افزودن سؤال دستی</h3><input id="question" placeholder="متن سؤال"><div id="opts" class="grid"></div><input id="correct" type="number" min="1" max="4" placeholder="شماره پاسخ صحیح (۱ تا ۴)"><button onclick="addQ()">افزودن سؤال</button><p id="count">تعداد سؤال‌های آماده: 0</p>
+<hr><h3>ورود گروهی از Word</h3><p class="muted">متن سؤالات را از Word کپی و اینجا جای‌گذاری کنید. هر سؤال باید شماره‌دار باشد و پاسخ صحیح با «پاسخ صحیح: ب» مشخص شود.</p>
+<textarea id="bulkText" placeholder="۱- پایتخت ایران کدام است؟&#10;الف) شیراز&#10;ب) تهران&#10;ج) اصفهان&#10;د) تبریز&#10;پاسخ صحیح: ب"></textarea>
+<button class="secondary" onclick="parseBulk()">بررسی و افزودن گروهی</button><p id="bulkStatus" class="muted"></p>
+<div class="row"><button onclick="saveExam()">ذخیره آزمون</button><button class="secondary" onclick="startAdminPreview()">پیش‌نمایش آزمون</button></div>
+<hr><h3>بانک آزمون‌ها</h3><div class="row"><button class="secondary" onclick="exportAllExams()">خروجی/ارسال آزمون‌ها</button><button class="secondary" onclick="document.getElementById('importFile').click()">ورود فایل JSON</button><input id="importFile" type="file" accept=".json,application/json" style="display:none" onchange="importExamFile(event)"></div><div id="savedExams"></div>
+<h3>گزارش نتایج</h3><div id="resultsList" class="muted">هنوز نتیجه‌ای ثبت نشده است.</div></section>
+<section class="panel hidden" id="quiz"><div class="row"><h3 id="qtitle" style="flex:1"></h3><span class="timer" id="timer">--:--</span></div><p id="qtext"></p><div id="choices"></div><p id="progress"></p></section>
+<section class="panel hidden" id="result"><h2>نتیجه آزمون</h2><h2 id="score"></h2><p id="resultInfo" class="muted"></p><button onclick="goHome()">بازگشت به صفحه اصلی</button></section>
+</main><script>
+let questions=[],quizQuestions=[],idx=0,score=0,activeExam=null,student=null,remaining=0,timerId=null,mode='admin',adminUnlocked=false;
+const BANK_KEY='jahanNama_exam_bank_v1',RESULT_KEY='jahanNama_results_v1',PASS_KEY='jahanNama_admin_pass_v1';
+const $=id=>document.getElementById(id);
+function getBank(){try{return JSON.parse(localStorage.getItem(BANK_KEY)||'[]')}catch(e){return []}}
+function setBank(v){localStorage.setItem(BANK_KEY,JSON.stringify(v));renderBank()}
+function getResults(){try{return JSON.parse(localStorage.getItem(RESULT_KEY)||'[]')}catch(e){return []}}
+function showOnly(id){['home','student','identity','admin','quiz','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
+function goHome(){if(timerId){clearInterval(timerId);timerId=null}showOnly('home')}
+function exitAdmin(){adminUnlocked=false;goHome()}
+function showStudent(){renderStudentExams();showOnly('student')}
+function adminLogin(){if(!adminUnlocked){let pass=prompt('رمز عبور پنل مدیریت را وارد کنید:');if(pass===null)return;let saved=localStorage.getItem(PASS_KEY);if(!saved){if(pass.length<4){alert('رمز اولیه باید حداقل ۴ رقم یا نویسه باشد. دوباره وارد شوید.');return}localStorage.setItem(PASS_KEY,pass);alert('رمز مدیریت برای این دستگاه تنظیم شد.');}else if(pass!==saved){alert('رمز عبور نادرست است.');return}adminUnlocked=true}showOnly('admin');renderBank();renderResults()}
+function renderStudentExams(){let box=$('studentExams');box.innerHTML='';let grade=$('grade').value,type=$('examType').value;let bank=getBank().filter(x=>(!grade||x.grade===grade)&&(!type||x.type===type));if(!bank.length){box.innerHTML='<p class="muted">برای این انتخاب هنوز آزمونی ثبت نشده است. مدیر باید ابتدا آزمون بسازد.</p>';return}bank.forEach(ex=>{let b=document.createElement('button');b.className='option';b.textContent=ex.title+' ـ بانک '+ex.questions.length+' سؤال (۲۰ سؤال در آزمون)';b.onclick=()=>{if(!Array.isArray(ex.questions)||ex.questions.length<20){alert('این آزمون کمتر از ۲۰ سؤال دارد. مدیر باید دست‌کم ۲۰ سؤال برای آن ثبت کند.');return}activeExam=ex;showOnly('identity')};box.appendChild(b)})}
+$('grade').onchange=renderStudentExams;$('examType').onchange=renderStudentExams;
+function beginStudentQuiz(){let name=$('fullName').value.trim();if(name.replace(/\s/g,'').length<5){alert('مجموع حروف نام و نام خانوادگی باید حداقل ۵ کاراکتر باشد.');return}if(!activeExam||!Array.isArray(activeExam.questions)||activeExam.questions.length<20){alert('برای این آزمون دست‌کم ۲۰ سؤال ثبت نشده است.');return}student={name,school:$('school').value.trim(),className:$('className').value.trim(),grade:$('grade').value,subject:$('subject').value,type:$('examType').value,lessons:activeExam.lessons||[]};mode='student';prepareRandomQuiz(activeExam);beginQuiz()}
+for(let i=1;i<=4;i++){let x=document.createElement('input');x.id='o'+i;x.placeholder='گزینه '+['الف','ب','ج','د'][i-1];$('opts').appendChild(x)}
+function addQ(){let q=$('question').value.trim(),o=[1,2,3,4].map(i=>$('o'+i).value.trim()),c=+$('correct').value;if(!q||o.some(x=>!x)||c<1||c>4){alert('متن سؤال، چهار گزینه و پاسخ صحیح را کامل کنید.');return}questions.push({q,o,c:c-1});$('count').textContent='تعداد سؤال‌های آماده: '+questions.length;$('question').value='';[1,2,3,4].forEach(i=>$('o'+i).value='');$('correct').value=''}
+function normalizeDigits(v){return String(v).replace(/[۰-۹٠-٩]/g,ch=>{let fa='۰۱۲۳۴۵۶۷۸۹',ar='٠١٢٣٤٥٦٧٨٩';let i=fa.indexOf(ch);return String(i>=0?i:ar.indexOf(ch))})}
+function parseBulk(){let raw=$('bulkText').value.trim();if(!raw){alert('ابتدا متن سؤالات را جای‌گذاری کنید.');return}raw=normalizeDigits(raw).replace(/[\u200e\u200f\u202a-\u202e]/g,'');let lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),blocks=[],cur=[];for(let line of lines){if(/^(?:سؤال\s*)?\d+\s*[-.)ـ:]/.test(line)&&cur.length){blocks.push(cur);cur=[line]}else cur.push(line)}if(cur.length)blocks.push(cur);let parsed=[],bad=[];blocks.forEach((b,i)=>{let qline=b.find(x=>/^(?:سؤال\s*)?\d+\s*[-.)ـ:]/.test(x));let q=qline?qline.replace(/^(?:سؤال\s*)?\d+\s*[-.)ـ:]\s*/,''):'';let opts=['الف','ب','ج','د'].map(l=>{let re=new RegExp('^'+l+'\\s*[)\u0640.:-]\\s*(.+)$');let line=b.find(x=>re.test(x));return line?line.replace(re,'$1').trim():''});let ansLine=b.find(x=>/(?:پاسخ|جواب)\s*(?:(?:صحیح|درست)\s*)?(?:گزینه\s*)?[:：]?\s*(?:الف|ب|ج|د)/.test(x));let ansMatch=ansLine&&ansLine.match(/(?:پاسخ|جواب)\s*(?:(?:صحیح|درست)\s*)?(?:گزینه\s*)?[:：]?\s*(الف|ب|ج|د)/);let ans=ansMatch?ansMatch[1]:'';let ci=['الف','ب','ج','د'].indexOf(ans);if(q&&opts.every(Boolean)&&ci>=0)parsed.push({q,o:opts,c:ci});else bad.push(i+1)});if(parsed.length){questions.push(...parsed);$('count').textContent='تعداد سؤال‌های آماده: '+questions.length}$('bulkStatus').textContent=parsed.length+' سؤال شناسایی شد.'+(bad.length?'؛ بلوک‌های نیازمند اصلاح: '+bad.join('، '):'؛ همه بلوک‌ها قابل قبول‌اند.');if(parsed.length&&!bad.length)$('bulkText').value=''}
+function getLessons(){return $('examLessons').value.split(/[،,؛;\s]+/).map(x=>normalizeDigits(x).trim()).filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i)}
+function saveExam(){let title=$('title').value.trim();if(questions.length<20){alert('برای ذخیره آزمون باید دست‌کم ۲۰ سؤال وارد کنید. می‌توانید بیش از ۲۰ سؤال هم ثبت کنید.');return}if(!title){alert('عنوان آزمون را بنویسید.');return}let bank=getBank();bank.unshift({id:Date.now().toString(),title,grade:$('adminGrade').value,type:$('adminType').value,subject:'مطالعات اجتماعی',lessons:getLessons(),questions:JSON.parse(JSON.stringify(questions)),createdAt:new Date().toISOString()});setBank(bank);questions=[];$('count').textContent='تعداد سؤال‌های آماده: 0';$('title').value='';$('examLessons').value='';$('bulkText').value='';$('bulkStatus').textContent='';alert('آزمون ذخیره شد. برای ساخت آزمون بعدی، سؤال‌های جدید را وارد کنید.')}
+function shuffleArray(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function prepareRandomQuiz(ex){let pool=JSON.parse(JSON.stringify(ex.questions));let chosen=shuffleArray(pool).slice(0,20);quizQuestions=chosen.map(q=>{let pairs=q.o.map((text,i)=>({text,correct:i===q.c}));shuffleArray(pairs);return {q:q.q,o:pairs.map(x=>x.text),c:pairs.findIndex(x=>x.correct)}});}
+function startAdminPreview(){if(questions.length<20){alert('برای پیش‌نمایش آزمون باید دست‌کم ۲۰ سؤال وارد کنید.');return}activeExam={title:$('title').value||'پیش‌نمایش',lessons:getLessons(),questions:JSON.parse(JSON.stringify(questions))};mode='admin';student=null;prepareRandomQuiz(activeExam);beginQuiz()}
+function playSaved(id){let ex=getBank().find(x=>x.id===id);if(!ex)return;if(ex.questions.length<20){alert('این آزمون کمتر از ۲۰ سؤال دارد.');return}activeExam=ex;$('title').value=ex.title;$('examLessons').value=(ex.lessons||[]).join('، ');mode='admin';student=null;prepareRandomQuiz(ex);beginQuiz()}
+function beginQuiz(){idx=0;score=0;remaining=quizQuestions.length*35;showOnly('quiz');$('qtitle').textContent=(activeExam?.title||$('title').value||'آزمون جهان‌نما')+((activeExam?.lessons||[]).length?' | سؤالات مربوط به درس‌های '+activeExam.lessons.join('، '):'');show();updateTimer();if(timerId)clearInterval(timerId);timerId=setInterval(()=>{remaining--;updateTimer();if(remaining<=0)finishQuiz(true)},1000)}
+function updateTimer(){$('timer').textContent=Math.floor(remaining/60).toString().padStart(2,'0')+':'+(remaining%60).toString().padStart(2,'0')}
+function show(){let q=quizQuestions[idx];if(!q){finishQuiz(false);return}$('qtext').textContent=q.q;let c=$('choices');c.innerHTML='';q.o.forEach((v,i)=>{let b=document.createElement('button');b.className='option';b.textContent=['الف','ب','ج','د'][i]+' ـ '+v;b.onclick=()=>{if(i===q.c)score++;idx++;if(idx<quizQuestions.length)show();else finishQuiz(false)};c.appendChild(b)});$('progress').textContent='سؤال '+(idx+1)+' از '+quizQuestions.length}
+function finishQuiz(timeout){if(timerId){clearInterval(timerId);timerId=null}showOnly('result');$('score').textContent=score+' از '+quizQuestions.length+' پاسخ صحیح';$('resultInfo').textContent=(student?student.name+' | ':'')+(timeout?'زمان آزمون به پایان رسید.':'آزمون به پایان رسید.');if(student){let r=getResults();r.unshift({...student,exam:activeExam?.title||'آزمون',lessons:activeExam?.lessons||[],score,total:quizQuestions.length,date:new Date().toLocaleString('fa-IR')});localStorage.setItem(RESULT_KEY,JSON.stringify(r))}}
+function renderBank(){let box=$('savedExams');if(!box)return;box.innerHTML='';getBank().forEach(ex=>{let d=document.createElement('div');d.className='panel';d.style.background='#f5fbf6';let h=document.createElement('b');h.textContent=ex.title;d.appendChild(h);let p=document.createElement('p');p.className='muted';p.textContent=(ex.grade||'')+' | '+(ex.type||'')+' | بانک '+ex.questions.length+' سؤال | هر نوبت: ۲۰ سؤال'+((ex.lessons||[]).length?' | درس‌های '+ex.lessons.join('، '):'');d.appendChild(p);let play=document.createElement('button');play.textContent='اجرای آزمایشی';play.onclick=()=>playSaved(ex.id);d.appendChild(play);let del=document.createElement('button');del.className='danger';del.textContent='حذف';del.onclick=()=>{if(confirm('آزمون حذف شود؟')){setBank(getBank().filter(x=>x.id!==ex.id))}};d.appendChild(del);box.appendChild(d)})}
+function renderResults(){let r=getResults();$('resultsList').innerHTML='';if(!r.length){$('resultsList').textContent='هنوز نتیجه‌ای ثبت نشده است.';return}r.forEach(x=>{let p=document.createElement('p');p.textContent=x.name+' | '+(x.school||'بدون مدرسه')+' | '+(x.className||'بدون کلاس')+' | '+x.exam+((x.lessons||[]).length?' | درس‌های '+x.lessons.join('، '):'')+' | '+x.score+'/'+x.total+' | '+x.date;$('resultsList').appendChild(p)})}
+function exportAllExams(){let bank=getBank();if(!bank.length){alert('بانک آزمون خالی است.');return}let data=JSON.stringify({app:'JahanNama',format:2,exams:bank},null,2);if(window.AndroidShare?.shareText)AndroidShare.shareText('آزمون‌های جهان‌نما',data);else{let a=document.createElement('a'),u=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.href=u;a.download='JahanNama_Exams.json';a.click();URL.revokeObjectURL(u)}}
+function importExamFile(e){let f=e.target.files?.[0];if(!f)return;let rd=new FileReader();rd.onload=()=>{try{let d=JSON.parse(rd.result),incoming=Array.isArray(d)?d:(d.exams||[]);if(!incoming.length||incoming.some(x=>!x||typeof x.title!=='string'||!Array.isArray(x.questions)||x.questions.some(q=>typeof q.q!=='string'||!Array.isArray(q.o)||q.o.length!==4||!Number.isInteger(q.c)||q.c<0||q.c>3)))throw 0;let bank=getBank();incoming.forEach(x=>bank.unshift({...x,lessons:Array.isArray(x.lessons)?x.lessons:[],id:Date.now()+'_'+Math.random().toString(36).slice(2)}));setBank(bank);alert('آزمون‌ها وارد شدند.')}catch(_){alert('فایل معتبر نیست.')}e.target.value=''};rd.readAsText(f,'UTF-8')}
+renderBank();
+</script></body></html>
